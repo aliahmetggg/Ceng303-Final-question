@@ -1,36 +1,34 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+    Code written by
+    18050111028 EGE GENCOGLU
+    18050111022 ALI AHMET TASKESEN
  */
 package enroll;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-/**
- *
- * @author User
- */
-
 public class Enroll {
-static int StartingID=11000;
-static int lecturerID=1000;
 
-    public static class Student{
+    static int StartingID = 11000;
+    static int lecturerID = 1000;
+
+    public static class Student {
+
         private String Name;
         private String Surname;
         private int ID;
         private int year;
         private String password;
-        private ArrayList<String> myClasses=new ArrayList<String>();
+        private ArrayList<String> myClasses = new ArrayList<String>();
 
         public Student(String Name, String Surname, int year, String password) {
             this.Name = Name;
             this.Surname = Surname;
-            StartingID+=1;
+            StartingID += 1;
             this.ID = StartingID;
             this.year = year;
-            this.password=password;
+            this.password = password;
         }
 
         public String getName() {
@@ -49,10 +47,11 @@ static int lecturerID=1000;
             return year;
         }
         //arraylistin toStringi yazılacak
-           
+
     }
-    
-    public static class Lecture{
+
+    public static class Lecture {
+
         private String lectureName;
         private Lecturer lecturer;
         private int Credit;
@@ -60,14 +59,44 @@ static int lecturerID=1000;
         private int year;
         private String Date;
         private String classroom;
+        private String Hour;
+        private String department;
 
-        public Lecture(String lectureName, Lecturer lecturer, int Credit, int numberOfSection, int year) {
+        public String getDepartment() {
+            return department;
+        }
+
+        public void setDepartment(String department) {
+            this.department = department;
+        }
+
+        public String getClassroom() {
+            return classroom;
+        }
+
+        public void setClassroom(String classroom) {
+            this.classroom = classroom;
+        }
+
+        public String getHour() {
+            return Hour;
+        }
+
+        public void setHour(String Hour) {
+            this.Hour = Hour;
+        }
+
+        public Lecture(String lectureName, Lecturer lecturer, int Credit, int year) {
             this.lectureName = lectureName;
             this.lecturer = lecturer;
             this.lecturer.givenCourses.add(lectureName);
             this.Credit = Credit;
-            this.numberOfSection = numberOfSection;
             this.year = year;
+        }
+
+        @Override
+        public String toString() {
+            return getLectureName() + "\n" + getLecturer().getName() + "\n" + getDate() + "\n" + getClassroom() + "\n" + getHour() + "\n" + getDepartment() + "\n";
         }
 
         public String getLectureName() {
@@ -125,16 +154,16 @@ static int lecturerID=1000;
         public void setClass(String classroom) {
             this.classroom = classroom;
         }
-          
     }
-    
-    public static class Lecturer{
+
+    public static class Lecturer {
+
         private String name;
         private String surname;
         private int ID;
         private String password;
-        private ArrayList<String> FullDays=new ArrayList<String>();
-        private ArrayList<String> givenCourses=new ArrayList <String>();
+        private ArrayList<String> FullDays = new ArrayList<String>();
+        private ArrayList<String> givenCourses = new ArrayList<String>();
 
         public Lecturer(String name, String surname, String password) {
             this.name = name;
@@ -167,7 +196,8 @@ static int lecturerID=1000;
         public ArrayList<String> getGivenCourses() {
             return givenCourses;
         }
-            //iki fonksiyon değişecek
+        //iki fonksiyon değişecek
+
         public void setFullDays(String Day) {
             this.FullDays.add(Day);
         }
@@ -175,68 +205,143 @@ static int lecturerID=1000;
         public void setGivenCourses(String givenCourse) {
             this.givenCourses.add(givenCourse);
         }
-        
-        
-    }
-    
-    public static void createSchedule(ArrayList<Lecture> Lecture){
-      String[][] days=new String[2][5];
-      days[0][0]="Monday Morning";
-      days[0][1]="Monday Afternoon";
-      days[1][0]="Tuesday Morning";
-      days[1][1]="Tuesday Afternoon";
-      days[2][0]="Wednesday Morning";
-      days[2][1]="Wednesday Afternoon";
-      days[3][0]="Thursday Morning";
-      days[3][1]="Thursday Afternoon";
-      days[4][0]="Friday Morning";
-      days[4][1]="Friday Afternoon";
 
-      
-      
-      
-               
-               
     }
-    
+
+    public static Lecture[][] createSchedule(ArrayList<Lecture> lectureList) {
+        String[] hours = {"09.00", "10.00", "11.00", "12.00", "13.00", "14.00", "15.00", "16.00", "17.00", "18.00"};//10
+        String[] classroomCode = {"111", "112", "113", "114", "115", "116", "117", "118", "119", "120", "121", "122", "123", "124", "125"};//15
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+        Lecture[][][] schedule = new Lecture[6][9][5];
+        Lecture[][] schedule2 = new Lecture[9][75];//[0-14]monday-[15-29]tueday-[30-44]wednesday-[45-59]thursday-[60-74]friday
+        for (int j = 0; j < 9; j++) {
+            for (int k = 0; k < 75; k++) {
+                schedule2[j][k] = null;
+            }
+        }
+        ArrayList<Lecture> temp = new ArrayList<Lecture>();
+        int counter = 0;
+        int class_counter = 0;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 75; j++) {
+                if (counter < 180) {
+                    if (schedule2[i][j] == null) {
+                        if (lectureList.get(counter).getLecturer().getFullDays().get(0) == days[j % 5]) {
+                            lectureList.get(counter).setDate(days[(j % 4) + 1]);
+                            lectureList.get(counter).setHour(hours[i]);
+                            lectureList.get(counter).setClassroom(classroomCode[class_counter]);
+                            if ((j + 15) >= 75) {
+                                i++;
+                                j = (j + 15) - 75;
+                            }
+                            schedule2[i][j + 15] = lectureList.get(counter);
+                            class_counter++;
+                            counter++;
+                            if (class_counter == 15) {
+                                class_counter = 0;
+                            }
+                        } else {
+                            lectureList.get(counter).setDate(days[j % 4]);
+                            lectureList.get(counter).setHour(hours[i]);
+                            lectureList.get(counter).setClassroom(classroomCode[class_counter]);
+                            if ((j + 15) >= 75) {
+                                i++;
+                                j = (j + 15) - 75;
+                            }
+                            schedule2[i][j + 15] = lectureList.get(counter);
+                            class_counter++;
+                            counter++;
+                            if (class_counter == 15) {
+                                class_counter = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return schedule2;
+    }
+
+    public static void printSchedule(Lecture schedule[][]) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 75; j++) {
+                /*if (j == 0&&schedule[i][j] != null) {
+                    System.out.println("---MONDAY---");
+                    System.out.println(schedule[i][j].toString());
+                } else if (j == 15 &&schedule[i][j] != null) {
+                    System.out.println("---TUESDAY---");
+                    System.out.println(schedule[i][j].toString());
+                } else if (j == 30&&schedule[i][j] != null) {
+                    System.out.println("---WEDNESDAY---");
+                    System.out.println(schedule[i][j].toString());
+                } else if (j == 45&&schedule[i][j] != null) {
+                    System.out.println("---THURSDAY---");
+                    System.out.println(schedule[i][j].toString());
+                } else if (j == 60&&schedule[i][j] != null) {
+                    System.out.println("---FRIDAY---");
+                    System.out.println(schedule[i][j].toString());
+                }*/
+                if (schedule[i][j] != null) {
+                    System.out.println(schedule[i][j].toString());
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
-        // TODO code application logic here
-        ArrayList <Lecture> lecList=new ArrayList<Lecture>();
-        Lecturer l1 =new Lecturer("ege","gncgl","12345");
-        System.err.println(l1.getID());
-        Lecturer l2 =new Lecturer("mrt","gncgl","12345");
-        System.err.println(l2.getID());      
-        Lecturer l3 =new Lecturer("lutfi","gncgl","12345");
-        System.err.println(l3.getID());    
-        Lecturer l4 =new Lecturer("sadiye","gncgl","12345");
-        System.err.println(l4.getID());   
-        Lecturer l5 =new Lecturer("buruşuk","gncgl","12345");
-        System.err.println(l5.getID());  
-        
-        l1.setFullDays("Monday");
-        l2.setFullDays("Tuesday");
-        l3.setFullDays("Wednesday");
-        l4.setFullDays("Thursday");
-        l5.setFullDays("Friday");
-        
-        Lecture lec1=new Lecture("Math",l1,5,3,3);
-        Lecture lec2=new Lecture("ceng113",l2,5,3,3);
-        Lecture lec3=new Lecture("ceng114",l2,5,3,3);
-        Lecture lec4=new Lecture("biology",l3,5,3,3);
-        Lecture lec5=new Lecture("chemstry",l3,5,3,3);
-        Lecture lec6=new Lecture("turkish",l4,5,3,3);
-        Lecture lec7=new Lecture("ceng101",l5,5,3,3);
-        Lecture lec8=new Lecture("ceng103",l5,5,3,3);
-        Lecture lec9=new Lecture("M1",l5,5,3,3);
-        Lecture lec10=new Lecture("M2",l1,5,3,3);
-        Lecture lec11=new Lecture("M3",l4,5,3,3);
-        Lecture lec12=new Lecture("M4",l4,5,3,3);
-        Lecture lec13=new Lecture("Math II",l1,5,3,3);
-        //0-1 ile 0-4 dahil random sayılar üretilecek
-        Random r=new Random();
-        int a=r.nextInt();
-        
 
+        ArrayList<Lecture> lectureList = new ArrayList<Lecture>();
+        ArrayList<Lecturer> lecturerList = new ArrayList<Lecturer>();
+
+        String nameLecturer = "TeacherName";
+        String surnameLecturer = "TeacherSurname";
+        int LecturerPassword = 12345;
+        String[] days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+        int keeper;
+        int counter = 0;
+        for (int i = 0; i < 60; i++) {
+            keeper = i;
+            Lecturer l1 = new Lecturer(nameLecturer.concat(String.valueOf(keeper + 1)), surnameLecturer.concat(String.valueOf(keeper + 1)), String.valueOf(i + LecturerPassword));
+            if (counter == 5) {
+                counter = 0;
+            }
+            l1.setFullDays(days[counter]);
+            lecturerList.add(l1);
+            counter++;
+        }
+        // Lecture(String lectureName, Lecturer lecturer, int Credit, int year)
+        String lectureName = "LectureName";
+        Random r = new Random();
+        int a = r.nextInt(7);
+        int b = r.nextInt(5);
+        counter = 0;
+        for (int i = 0; i < 180; i++) {
+            keeper = i;
+            if (counter == 59) {
+                counter = 0;
+            }
+            Lecture lec1 = new Lecture(lectureName.concat(String.valueOf(keeper + 1)), lecturerList.get(counter), a, b);
+            a = r.nextInt(5);
+            b = r.nextInt(5);
+            if ((i + 1) % 6 == 0) {
+                lec1.setDepartment("Computer Engineering");
+            } else if ((i + 1) % 6 == 1) {
+                lec1.setDepartment("Electric & Electronic Engineering");
+            } else if ((i + 1) % 6 == 2) {
+                lec1.setDepartment("Civil Engineering");
+            } else if ((i + 1) % 6 == 3) {
+                lec1.setDepartment("Mechanical Engineering");
+            }
+            if ((i + 1) % 6 == 5) {
+                lec1.setDepartment("Geology Engineering");
+            } else {
+                lec1.setDepartment("Industry Engineering");
+            }
+            lectureList.add(lec1);
+            counter++;
+        }
+        Lecture arr[][] = createSchedule(lectureList);
+        printSchedule(arr);
     }
-    
+
 }
