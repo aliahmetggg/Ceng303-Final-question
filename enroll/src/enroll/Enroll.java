@@ -7,6 +7,7 @@ package enroll;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Enroll {
 
@@ -17,18 +18,20 @@ public class Enroll {
 
         private String Name;
         private String Surname;
-        private int ID;
+        private int stdID;
         private int year;
         private String password;
-        private ArrayList<String> myClasses = new ArrayList<String>();
+        private String myDepartment;
+        private ArrayList<Lecture> myClasses = new ArrayList<Lecture>();
 
-        public Student(String Name, String Surname, int year, String password) {
+        public Student(String Name, String Surname, int year, String password, String myDepartment) {
             this.Name = Name;
             this.Surname = Surname;
             StartingID += 1;
-            this.ID = StartingID;
+            this.stdID = StartingID;
             this.year = year;
             this.password = password;
+            this.myDepartment = myDepartment;
         }
 
         public String getName() {
@@ -40,13 +43,25 @@ public class Enroll {
         }
 
         public int getID() {
-            return ID;
+            return stdID;
         }
 
         public int getYear() {
             return year;
         }
+
         //arraylistin toStringi yazılacak
+        public String getPassword() {
+            return password;
+        }
+
+        public String getMyDepartment() {
+            return myDepartment;
+        }
+
+        public ArrayList<Lecture> getMyClasses() {
+            return myClasses;
+        }
 
     }
 
@@ -96,7 +111,7 @@ public class Enroll {
 
         @Override
         public String toString() {
-            return getLectureName() + "\n" + getLecturer().getName() + "\n" + getDate() + "\n" + getClassroom() + "\n" + getHour() + "\n" + getDepartment() + "\n";
+            return getLectureName() + "\n" + getLecturer().getName() + "\nDate: " + getDate() + "\nClassroom: " + getClassroom() + "\nHour: " + getHour() + "\n" + getDepartment() + "\n";
         }
 
         public String getLectureName() {
@@ -259,13 +274,14 @@ public class Enroll {
                 }
             }
         }
+        //System.out.println(schedule2);
         return schedule2;
     }
 
     public static void printSchedule(Lecture schedule[][]) {
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 75; j++) {
-                /*if (j == 0&&schedule[i][j] != null) {
+            for (int j = 0; j < 75; j++) {/*
+                if (j == 0&&schedule[i][j] != null) {
                     System.out.println("---MONDAY---");
                     System.out.println(schedule[i][j].toString());
                 } else if (j == 15 &&schedule[i][j] != null) {
@@ -292,6 +308,9 @@ public class Enroll {
 
         ArrayList<Lecture> lectureList = new ArrayList<Lecture>();
         ArrayList<Lecturer> lecturerList = new ArrayList<Lecturer>();
+        ArrayList<Student> AllStudents = new ArrayList<Student>();
+        //Student[] AllStudents = new Student[1300];
+        ArrayList<String> canAddLecture = new ArrayList<String>();
 
         String nameLecturer = "TeacherName";
         String surnameLecturer = "TeacherSurname";
@@ -301,7 +320,7 @@ public class Enroll {
         int counter = 0;
         for (int i = 0; i < 60; i++) {
             keeper = i;
-            Lecturer l1 = new Lecturer(nameLecturer.concat(String.valueOf(keeper + 1)), surnameLecturer.concat(String.valueOf(keeper + 1)), String.valueOf(i + LecturerPassword));
+            Lecturer l1 = new Lecturer(nameLecturer.concat(String.valueOf(keeper + 1)), surnameLecturer.concat(String.valueOf(keeper + 1)), String.valueOf(LecturerPassword));
             if (counter == 5) {
                 counter = 0;
             }
@@ -323,25 +342,226 @@ public class Enroll {
             Lecture lec1 = new Lecture(lectureName.concat(String.valueOf(keeper + 1)), lecturerList.get(counter), a, b);
             a = r.nextInt(5);
             b = r.nextInt(5);
-            if ((i + 1) % 6 == 0) {
+            if (i % 6 == 0) {
                 lec1.setDepartment("Computer Engineering");
-            } else if ((i + 1) % 6 == 1) {
+            } else if (i % 6 == 1) {
                 lec1.setDepartment("Electric & Electronic Engineering");
-            } else if ((i + 1) % 6 == 2) {
+            } else if (i % 6 == 2) {
                 lec1.setDepartment("Civil Engineering");
-            } else if ((i + 1) % 6 == 3) {
+            } else if (i % 6 == 3) {
                 lec1.setDepartment("Mechanical Engineering");
-            }
-            if ((i + 1) % 6 == 5) {
+            } else if (i % 6 == 4) {
                 lec1.setDepartment("Geology Engineering");
-            } else {
+            } else if (i % 6 == 5) {
                 lec1.setDepartment("Industry Engineering");
             }
+            //System.out.println(lec1);
             lectureList.add(lec1);
             counter++;
         }
         Lecture arr[][] = createSchedule(lectureList);
-        printSchedule(arr);
+        //printSchedule(arr);
+
+        String[] departments = {"Industry Engineering", "Geology Engineering", "Mechanical Engineering", "Civil Engineering", "Electric & Electronic Engineering", "Computer Engineering"};
+        String Name = "StudentName";
+        String Surname = "StudentSurname";
+        String StudentPassword = "12345";
+
+        //String password;
+        for (int k = 0; k < 1200; k++) {
+            //String keeper = String.valueOf(k); 
+            keeper = k;
+            //public Student(String Name, String Surname, int year, String password)
+
+            Student s = new Student(Name.concat(String.valueOf(k)), Surname.concat(String.valueOf(k)), r.nextInt(4) + 1, StudentPassword, departments[r.nextInt(6)]);
+            //Lecturer l1 = new Lecturer(nameLecturer.concat(String.valueOf(keeper + 1)), surnameLecturer.concat(String.valueOf(keeper + 1)), String.valueOf(i + LecturerPassword));
+            //l1.setFullDays(days[counter]);
+            //System.out.println(s.getName() + ' ' + s.getYear() + ' ' + s.myDepartment);
+            AllStudents.add(s);
+        }
+
+        System.out.println("Welcome to Enroll MENU !");
+        System.out.println("Press 1 for show all schedule");
+        System.out.println("Press 2 for sign in Students");
+        System.out.println("Press 3 for sign in Teachers");
+        System.out.println("Press 4 for exit");
+        System.out.print("What is your choice: ");
+        Scanner s = new Scanner(System.in);
+        int choice = s.nextInt();
+
+        while (choice != 4) {
+            //1347 
+            if (choice == 1) {
+                
+                printSchedule(arr);
+                System.out.println("Press 2 for sign in Students");
+                System.out.println("Press 3 for sign in Teachers");
+                System.out.println("Press 4 for exit");
+                System.out.print("What is your choice: ");
+                choice = s.nextInt();
+            }
+            if (choice == 2) {
+                Scanner s1 = new Scanner(System.in);
+                System.out.println("ID: ");
+                int temp_id = s1.nextInt();
+
+                Scanner s2 = new Scanner(System.in);
+                System.out.println("Password: : ");
+                String temp_pw = s2.nextLine();
+
+                //System.out.println(AllStudents.get(0).Name);
+                //System.out.println(AllStudents.get(0).password);
+                int flag = 1;
+                for (int iter = 0; iter < AllStudents.size() ; iter++) {
+                    
+                    if (AllStudents.get(iter).getID() == temp_id && AllStudents.get(iter).getPassword().equals(temp_pw)) {
+                        System.out.println("Sign in SUCCESSFUL!");
+                        Student currentStd = AllStudents.get(iter);
+
+                        System.out.println("Press 1 for add course");
+                        System.out.println("Press 5 for show your current courses");
+                        System.out.println("Press 4 for exit");
+
+                        Scanner scan = new Scanner(System.in);
+                        int choice2 = scan.nextInt();
+
+                        if (choice2 == 1) {
+
+                            System.out.println("mydepertment: " + currentStd.myDepartment);
+                            for (int i = 0; i < lectureList.size(); i++) {
+                                /*System.out.println(lectureList.get(i).department);
+                                System.out.println("çekdeneme");
+                                System.out.println(currentStd.myDepartment);*/
+                                //System.out.println("lecture: " + i + lectureList.get(i).getDepartment());
+                                if (lectureList.get(i).getDepartment().equals(currentStd.getMyDepartment()) &&
+                                        (
+                                        currentStd.getYear() == lectureList.get(i).getYear() ||
+                                        currentStd.getYear()+1 == lectureList.get(i).getYear() || 
+                                        currentStd.getYear()-1 == lectureList.get(i).getYear() )
+                                        ){
+                                    
+                                    canAddLecture.add(lectureList.get(i).lectureName);
+                                }
+
+                            }
+
+                            System.out.println(canAddLecture);
+                            System.out.println("choose you want ");
+                            Scanner scan2 = new Scanner(System.in);
+                            String willAdd = scan2.nextLine();
+
+                            for (int i = 0; i < lectureList.size(); i++) {
+                                if (lectureList.get(i).getLectureName().equals(willAdd)) {
+
+                                    currentStd.myClasses.add(lectureList.get(i));
+                                }
+                            }
+
+                            System.out.println("Your current courses and schedules: ");
+
+                            for (Lecture l1 : currentStd.myClasses) {
+                                System.out.println(l1.toString());
+                            }
+
+                            System.out.println("if you want to add more lecture press 2");
+                            System.out.println("For Exit Press 4");
+                            choice2 = scan.nextInt();
+                        }
+
+                        if (choice2 == 2) {
+                            while (choice2 == 2) {
+
+                                System.out.println(canAddLecture);
+                                System.out.println("choose you want ");
+                                Scanner scan2 = new Scanner(System.in);
+                                String willAdd = scan2.nextLine();
+
+                                for (int i = 0; i < lectureList.size(); i++) {
+                                    if (lectureList.get(i).getLectureName().equals(willAdd)) {
+
+                                        currentStd.myClasses.add(lectureList.get(i));
+                                    }
+                                }
+
+                                System.out.println("Your current courses: ");
+
+                                for (Lecture l1 : currentStd.myClasses) {
+                                    System.out.println(l1.toString());
+                                }
+
+                                System.out.println("if you want to add more lecture press 2");
+                                System.out.println("For Exit Press 4");
+                                choice2 = scan.nextInt();
+
+                            }
+                        }
+                        if (choice2 == 5) {
+                            System.out.println("Your current courses: ");
+
+                                for (Lecture l1 : currentStd.myClasses) {
+                                    System.out.println(l1.toString());
+                                }
+                                
+                            System.out.println("if you want to add lecture press 2");
+                            System.out.println("For Exit Press 4");
+                            choice2 = scan.nextInt();
+                        }
+                        if (choice2 == 4) {
+                            flag = 0;
+                            break;
+                        }
+                    }
+                }
+
+                if (flag == 1) {
+                    System.out.println("ERROR: you UNSUCCESS or valid choice!");
+                    System.out.println("Press 2 for try again");
+                    System.out.println("Press 4 for exit");
+                    break;
+                }
+                break;
+
+            }
+            if (choice == 3){
+                Scanner s1 = new Scanner(System.in);
+                System.out.println("ID: ");
+                int temp_id = s1.nextInt();
+
+                Scanner s2 = new Scanner(System.in);
+                System.out.println("Password: : ");
+                String temp_pw = s2.nextLine();
+                
+                for (int iter = 0; iter < lecturerList.size() ; iter++) {
+                    if (lecturerList.get(iter).getID() == temp_id && lecturerList.get(iter).getPassword().equals(temp_pw)){
+                        System.out.println("Sign in SUCCESSFUL!");
+                        Lecturer currentTeacher = lecturerList.get(iter);
+                        
+                        System.out.println("Press 1 for your given courses ");
+                        //System.out.println("Press 5 for show your current courses");
+                        //System.out.println("Press 4 for exit");
+
+                        Scanner scan = new Scanner(System.in);
+                        int choice2 = scan.nextInt();
+                        
+                        if (choice2 == 1){
+                            
+                            System.out.println(currentTeacher.givenCourses.toString());
+
+                            break;
+                            
+                        }
+                        if(choice2 == 4){
+                            break;
+                        }
+                    } 
+                }
+                break;
+            }
+            if (choice == 4) {
+                break;
+            }
+
+        }
     }
 
 }
